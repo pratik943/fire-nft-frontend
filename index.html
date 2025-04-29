@@ -4,36 +4,115 @@
   <meta charset="UTF-8">
   <title>Burn Build Burn</title>
 
-  <!-- Load ethers.js -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js"></script>
+  <!-- Load ethers.js v5 (v6 won't work with Web3Provider) -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 
-  <!-- Load Web3Modal standalone UMD (correct source) -->
-  <script src="https://unpkg.com/@web3modal/standalone@3.5.3/dist/standalone.umd.js"></script>
+  <style>
+    body {
+      text-align: center;
+      padding: 30px;
+      font-family: Arial, sans-serif;
+    }
 
-  <!-- Load custom script -->
-  <script src="script.js" defer></script>
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      margin: 10px;
+      cursor: pointer;
+    }
+
+    #mintBtn {
+      background-color: orange;
+      color: white;
+    }
+
+    #connectWalletBtn {
+      background-color: black;
+      color: white;
+    }
+  </style>
 </head>
+<body>
 
-<body style="text-align: center; padding: 30px; font-family: Arial, sans-serif;">
   <h1>🔥 Burn Build Burn 🔥</h1>
 
-  <button onclick="connectWallet()" style="padding:10px 20px; font-size:18px;">Connect Wallet</button>
-
-  <div id="walletAddress" style="margin: 20px;"></div>
+  <button id="connectWalletBtn">Connect Wallet</button>
+  <div id="walletAddress" style="margin: 10px;"></div>
 
   <h2>Mint a FireNFT</h2>
-  <p>Pay exactly 0.000111 ETH to mint 1 FireNFT!</p>
-  <button onclick="mintNFT()" style="padding:10px 20px; font-size:18px; background-color: orange; color: white; border: none; border-radius: 5px;">Mint for 0.000111 ETH</button>
+  <p>Pay exactly <strong>0.000111 ETH</strong> to mint 1 FireNFT</p>
+  <button id="mintBtn" disabled>Mint for 0.000111 ETH</button>
 
   <hr style="margin: 30px 0;">
 
   <h2>Burn an NFT to Mint</h2>
-  <p>Send any NFT you own to our contract to mint a FireNFT automatically.</p>
-  <ul style="text-align: left; max-width: 400px; margin: auto;">
-    <li>Connect your Wallet</li>
-    <li>Transfer NFT to: <strong>0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285</strong></li>
-    <li>Done! You will auto-mint your FireNFT</li>
-  </ul>
+  <p>Send any NFT you own to this address to mint a FireNFT automatically:</p>
+  <strong>0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285</strong>
+
+  <script>
+    let provider;
+    let signer;
+    let userAddress;
+
+    const contractAddress = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285";
+    const contractABI = [
+      {
+        "inputs": [],
+        "name": "mintWithEth",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      }
+    ];
+
+    async function connectWallet() {
+      if (window.ethereum) {
+        try {
+          provider = new ethers.providers.Web3Provider(window.ethereum);
+          await provider.send("eth_requestAccounts", []);
+          signer = provider.getSigner();
+          userAddress = await signer.getAddress();
+
+          document.getElementById("walletAddress").innerText =
+            "Connected: " + userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+          document.getElementById("mintBtn").disabled = false;
+
+          alert("Wallet Connected Successfully!");
+        } catch (err) {
+          console.error(err);
+          alert("Connection failed!");
+        }
+      } else {
+        alert("MetaMask not detected!");
+      }
+    }
+
+    async function mintNFT() {
+      if (!signer) {
+        alert("Please connect your wallet first!");
+        return;
+      }
+
+      try {
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        const tx = await contract.mintWithEth({
+          value: ethers.utils.parseEther("0.000111")
+        });
+        alert("Transaction sent!\nTX Hash: " + tx.hash);
+        window.open(`https://basescan.org/tx/${tx.hash}`, "_blank");
+      } catch (error) {
+        console.error(error);
+        alert("Mint failed!");
+      }
+    }
+
+    window.onload = () => {
+      document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
+      document.getElementById("mintBtn").addEventListener("click", mintNFT);
+    };
+  </script>
 
 </body>
 </html>
