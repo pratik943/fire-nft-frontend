@@ -2,7 +2,7 @@ let signer;
 let provider;
 let userAddress;
 
-const fireNFTContract = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285"; // your contract
+const fireNFTContract = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285";
 const fireNFTABI = [
   {
     "inputs": [],
@@ -13,12 +13,12 @@ const fireNFTABI = [
   }
 ];
 
-// Setup Web3Modal
-const modal = window.Web3ModalStandalone.default({
-  projectId: "ca6d2183aa46019ee53d7c3a1fce4f58", // demo project ID (you can replace later)
+// FIXED: Web3Modal standalone initialization
+const modal = window.web3modal.initStandalone({
+  projectId: "ca6d2183aa46019ee53d7c3a1fce4f58",
   chains: [
     {
-      id: 8453, // Base Mainnet
+      id: 8453,
       name: "Base",
       rpcUrls: ["https://mainnet.base.org"],
       nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 }
@@ -28,7 +28,7 @@ const modal = window.Web3ModalStandalone.default({
 
 async function connectWallet() {
   try {
-    await modal.openModal(); // <- This shows the actual WalletConnect popup
+    await modal.openModal();
     const session = await modal.connect();
 
     provider = new ethers.BrowserProvider(session.provider);
