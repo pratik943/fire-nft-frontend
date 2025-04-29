@@ -13,22 +13,26 @@ const fireNFTABI = [
   }
 ];
 
-// FIXED: Web3Modal standalone initialization
-const modal = window.web3modal.initStandalone({
-  projectId: "ca6d2183aa46019ee53d7c3a1fce4f58",
+// ✅ FIX: Use Web3ModalStandalone to match standalone.umd.js
+const modal = window.Web3ModalStandalone.initStandalone({
+  projectId: "ca6d2183aa46019ee53d7c3a1fce4f58", // You can replace with your own later
   chains: [
     {
       id: 8453,
       name: "Base",
       rpcUrls: ["https://mainnet.base.org"],
-      nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 }
+      nativeCurrency: {
+        name: "ETH",
+        symbol: "ETH",
+        decimals: 18
+      }
     }
   ]
 });
 
 async function connectWallet() {
   try {
-    await modal.openModal();
+    await modal.openModal(); // ✅ Show WalletConnect popup
     const session = await modal.connect();
 
     provider = new ethers.BrowserProvider(session.provider);
