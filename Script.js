@@ -14,24 +14,25 @@ const contractABI = [
 ];
 
 async function connectWallet() {
-  if (window.ethereum) {
-    try {
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      userAddress = await signer.getAddress();
-
-      document.getElementById("walletAddress").innerText =
-        "Connected: " + userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
-      document.getElementById("mintBtn").disabled = false;
-
-      alert("Wallet Connected Successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Connection failed!");
-    }
-  } else {
+  if (!window.ethereum) {
     alert("MetaMask not detected!");
+    return;
+  }
+
+  try {
+    provider = new ethers.providers.Web3Provider(window.ethereum); // Ethers v5 syntax
+    await provider.send("eth_requestAccounts", []);
+    signer = provider.getSigner();
+    userAddress = await signer.getAddress();
+
+    document.getElementById("walletAddress").innerText =
+      "Connected: " + userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+    document.getElementById("mintBtn").disabled = false;
+
+    alert("Wallet Connected Successfully!");
+  } catch (err) {
+    console.error(err);
+    alert("Connection failed!");
   }
 }
 
