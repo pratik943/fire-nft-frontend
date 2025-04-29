@@ -3,21 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <title>Burn Build Burn</title>
+
+  <!-- Load ethers.js -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.min.js"></script>
+
+  <!-- Load WalletConnect SDK -->
+  <script src="https://unpkg.com/@walletconnect/web3-provider@2.0.0-beta.15/dist/index.umd.min.js"></script>
+
+  <!-- Load your custom script -->
   <script src="script.js" defer></script>
+
 </head>
-<body style="text-align: center; padding: 30px;">
+<body style="text-align: center; padding: 30px; font-family: Arial, sans-serif;">
+
   <h1>🔥 Burn Build Burn 🔥</h1>
 
   <button onclick="connectWallet()" style="padding:10px 20px; font-size:18px;">Connect Wallet</button>
 
   <div id="walletAddress" style="margin: 20px;"></div>
 
-  <button onclick="mintNFT()" style="padding:10px 20px; font-size:18px;">Mint with 0.000111 ETH</button>
+  <h2>Mint a FireNFT</h2>
+  <p>Pay exactly 0.000111 ETH to mint 1 FireNFT!</p>
+  <button onclick="mintNFT()" style="padding:10px 20px; font-size:18px; background-color: orange; color: white; border: none; border-radius: 5px;">Mint for 0.000111 ETH</button>
 
-  <h2>Burn NFT to Mint</h2>
-  <input type="text" id="nftContract" placeholder="NFT Contract Address" style="padding:8px; width:80%; margin-bottom:10px;"><br>
-  <input type="text" id="tokenId" placeholder="Token ID" style="padding:8px; width:80%; margin-bottom:10px;"><br>
-  <button onclick="burnNFT()" style="padding:10px 20px; font-size:18px;">Burn NFT</button>
+  <hr style="margin: 30px 0;">
+
+  <h2>Burn an NFT to Mint</h2>
+  <p>Send any NFT you own to our contract to mint a FireNFT automatically.</p>
+  <p>Steps:</p>
+  <ul style="text-align: left; max-width: 400px; margin: auto;">
+    <li>1. Connect your Wallet</li>
+    <li>2. Find your NFT's contract address and Token ID</li>
+    <li>3. Transfer NFT to this address: <strong>0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285</strong></li>
+    <li>4. After transfer, your FireNFT will be minted automatically!</li>
+  </ul>
+
 </body>
 </html>
