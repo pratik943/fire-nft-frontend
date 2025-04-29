@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Burn Build Burn</title>
 
-  <!-- Load ethers.js v5 (v6 won't work with Web3Provider) -->
+  <!-- Use ethers.js v5 -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 
   <style>
@@ -13,7 +13,6 @@
       padding: 30px;
       font-family: Arial, sans-serif;
     }
-
     button {
       padding: 10px 20px;
       font-size: 18px;
@@ -22,12 +21,10 @@
       margin: 10px;
       cursor: pointer;
     }
-
     #mintBtn {
       background-color: orange;
       color: white;
     }
-
     #connectWalletBtn {
       background-color: black;
       color: white;
@@ -45,7 +42,7 @@
   <p>Pay exactly <strong>0.000111 ETH</strong> to mint 1 FireNFT</p>
   <button id="mintBtn" disabled>Mint for 0.000111 ETH</button>
 
-  <hr style="margin: 30px 0;">
+  <hr style="margin: 30px 0;" />
 
   <h2>Burn an NFT to Mint</h2>
   <p>Send any NFT you own to this address to mint a FireNFT automatically:</p>
@@ -68,24 +65,25 @@
     ];
 
     async function connectWallet() {
-      if (window.ethereum) {
-        try {
-          provider = new ethers.providers.Web3Provider(window.ethereum);
-          await provider.send("eth_requestAccounts", []);
-          signer = provider.getSigner();
-          userAddress = await signer.getAddress();
-
-          document.getElementById("walletAddress").innerText =
-            "Connected: " + userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
-          document.getElementById("mintBtn").disabled = false;
-
-          alert("Wallet Connected Successfully!");
-        } catch (err) {
-          console.error(err);
-          alert("Connection failed!");
-        }
-      } else {
+      if (!window.ethereum) {
         alert("MetaMask not detected!");
+        return;
+      }
+
+      try {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        document.getElementById("walletAddress").innerText =
+          "Connected: " + userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+        document.getElementById("mintBtn").disabled = false;
+
+        alert("Wallet Connected Successfully!");
+      } catch (err) {
+        console.error(err);
+        alert("Connection failed!");
       }
     }
 
