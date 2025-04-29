@@ -1,8 +1,9 @@
 let signer;
+let provider;
 let userAddress;
-let provider; // dynamic provider (MetaMask OR WalletConnect)
+let web3Modal;
 
-const fireNFTContract = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285"; // Your contract address
+const fireNFTContract = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285"; // your contract
 const fireNFTABI = [
   {
     "inputs": [],
@@ -13,35 +14,34 @@ const fireNFTABI = [
   }
 ];
 
-// WalletConnect Project ID (you can generate your own free at walletconnect.com)
-const wcProjectId = "ca6d2183aa46019ee53d7c3a1fce4f58"; // Using public demo projectId
+// WalletConnect Provider options
+const providerOptions = {
+  walletconnect: {
+    package: window.WalletConnectProvider.default,
+    options: {
+      rpc: {
+        8453: "https://mainnet.base.org" // Base Mainnet RPC
+      },
+      chainId: 8453
+    }
+  }
+};
+
+// Initialize Web3Modal
+window.addEventListener('load', async () => {
+  web3Modal = new window.Web3Modal.default({
+    cacheProvider: false,
+    providerOptions
+  });
+});
 
 async function connectWallet() {
   try {
-    if (window.ethereum) {
-      // Ask user if they want MetaMask or WalletConnect
-      const useWalletConnect = confirm("Click OK for WalletConnect, Cancel for MetaMask");
-
-      if (useWalletConnect) {
-        const walletConnectProvider = new window.WalletConnectProvider.default({
-          projectId: wcProjectId,
-          chains: [8453], // Base mainnet chain ID
-          methods: ["eth_sendTransaction", "eth_signTransaction", "personal_sign", "eth_signTypedData"]
-        });
-
-        await walletConnectProvider.enable();
-        provider = new ethers.BrowserProvider(walletConnectProvider);
-      } else {
-        provider = new ethers.BrowserProvider(window.ethereum);
-        await provider.send("eth_requestAccounts", []);
-      }
-
-      signer = await provider.getSigner();
-      userAddress = await signer.getAddress();
-      document.getElementById("walletAddress").innerText = "Connected: " + userAddress;
-    } else {
-      alert("No wallet detected! Install MetaMask or use WalletConnect compatible wallet.");
-    }
+    const instance = await web3Modal.connect();
+    provider = new ethers.BrowserProvider(instance);
+    signer = await provider.getSigner();
+    userAddress = await signer.getAddress();
+    document.getElementById("walletAddress").innerText = "Connected: " + userAddress;
   } catch (err) {
     console.error(err);
     alert("Wallet connection failed.");
