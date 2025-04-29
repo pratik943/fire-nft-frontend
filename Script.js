@@ -1,7 +1,6 @@
 let signer;
 let provider;
 let userAddress;
-let web3Modal;
 
 const fireNFTContract = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285"; // your contract
 const fireNFTABI = [
@@ -14,31 +13,23 @@ const fireNFTABI = [
   }
 ];
 
-// WalletConnect Provider options
-const providerOptions = {
-  walletconnect: {
-    package: window.WalletConnectProvider.default,
-    options: {
-      rpc: {
-        8453: "https://mainnet.base.org" // Base Mainnet RPC
-      },
-      chainId: 8453
+// Setup Web3Modal
+const modal = window.Web3ModalStandalone.default({
+  projectId: "ca6d2183aa46019ee53d7c3a1fce4f58", // Demo Project ID (public)
+  chains: [
+    {
+      id: 8453, // Base Mainnet
+      name: "Base",
+      rpcUrls: ["https://mainnet.base.org"],
+      nativeCurrency: { name: "ETH", symbol: "ETH", decimals: 18 }
     }
-  }
-};
-
-// Initialize Web3Modal
-window.addEventListener('load', async () => {
-  web3Modal = new window.Web3Modal.default({
-    cacheProvider: false,
-    providerOptions
-  });
+  ]
 });
 
 async function connectWallet() {
   try {
-    const instance = await web3Modal.connect();
-    provider = new ethers.BrowserProvider(instance);
+    const session = await modal.connect();
+    provider = new ethers.BrowserProvider(session.provider);
     signer = await provider.getSigner();
     userAddress = await signer.getAddress();
     document.getElementById("walletAddress").innerText = "Connected: " + userAddress;
