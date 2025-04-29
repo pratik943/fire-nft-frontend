@@ -1,9 +1,9 @@
-let signer;
 let provider;
+let signer;
 let userAddress;
 
-const fireNFTContract = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285";
-const fireNFTABI = [
+const contractAddress = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285";
+const contractABI = [
   {
     "inputs": [],
     "name": "mintWithEth",
@@ -14,44 +14,47 @@ const fireNFTABI = [
 ];
 
 async function connectWallet() {
-  if (!window.ethereum) {
-    alert("MetaMask not detected.");
-    return;
-  }
+  if (window.ethereum) {
+    try {
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      userAddress = await signer.getAddress();
 
-  try {
-    // Request wallet connection
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const account = accounts[0];
+      document.getElementById("walletAddress").innerText =
+        "Connected: " + userAddress.slice(0, 6) + "..." + userAddress.slice(-4);
+      document.getElementById("mintBtn").disabled = false;
 
-    // Create provider and signer
-    provider = new ethers.BrowserProvider(window.ethereum);
-    signer = await provider.getSigner();
-    userAddress = account;
-
-    // Display wallet address
-    document.getElementById("walletAddress").innerText = "Connected: " + userAddress;
-  } catch (error) {
-    console.error(error);
-    alert("Connection failed: " + error.message);
+      alert("Wallet Connected Successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Connection failed!");
+    }
+  } else {
+    alert("MetaMask not detected!");
   }
 }
 
 async function mintNFT() {
   if (!signer) {
-    alert("Please connect your wallet first.");
+    alert("Please connect your wallet first!");
     return;
   }
 
   try {
-    const contract = new ethers.Contract(fireNFTContract, fireNFTABI, signer);
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
     const tx = await contract.mintWithEth({
-      value: ethers.parseEther("0.000111")
+      value: ethers.utils.parseEther("0.000111")
     });
-    await tx.wait();
-    alert("NFT Minted Successfully!");
+    alert("Transaction sent!\nTX Hash: " + tx.hash);
+    window.open(`https://basescan.org/tx/${tx.hash}`, "_blank");
   } catch (error) {
     console.error(error);
-    alert("Mint failed: " + error.message);
+    alert("Mint failed!");
   }
 }
+
+window.onload = () => {
+  document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
+  document.getElementById("mintBtn").addEventListener("click", mintNFT);
+};
