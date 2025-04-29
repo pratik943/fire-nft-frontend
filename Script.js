@@ -13,36 +13,30 @@ const fireNFTABI = [
   }
 ];
 
-// ✅ FIX: Use Web3ModalStandalone to match standalone.umd.js
-const modal = window.Web3ModalStandalone.initStandalone({
-  projectId: "ca6d2183aa46019ee53d7c3a1fce4f58", // You can replace with your own later
-  chains: [
-    {
-      id: 8453,
-      name: "Base",
-      rpcUrls: ["https://mainnet.base.org"],
-      nativeCurrency: {
-        name: "ETH",
-        symbol: "ETH",
-        decimals: 18
-      }
-    }
-  ]
-});
-
 async function connectWallet() {
-  try {
-    await modal.openModal(); // ✅ Show WalletConnect popup
-    const session = await modal.connect();
+  if (!window.ethereum) {
+    alert("MetaMask is not installed.");
+    return;
+  }
 
-    provider = new ethers.BrowserProvider(session.provider);
+  try {
+    // Request account access
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+
+    // Switch to Base mainnet (chainId: 0x2105)
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x2105" }] // Base chain ID in hex
+    });
+
+    provider = new ethers.BrowserProvider(window.ethereum);
     signer = await provider.getSigner();
     userAddress = await signer.getAddress();
 
     document.getElementById("walletAddress").innerText = "Connected: " + userAddress;
-  } catch (err) {
-    console.error(err);
-    alert("Wallet connection failed.");
+  } catch (error) {
+    console.error(error);
+    alert("Connection failed: " + error.message);
   }
 }
 
