@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Burn Build Burn</title>
 
-  <!-- Use ethers.js v5 -->
+  <!-- Use ethers.js v5 (important!) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
 
   <style>
@@ -13,6 +13,7 @@
       padding: 30px;
       font-family: Arial, sans-serif;
     }
+
     button {
       padding: 10px 20px;
       font-size: 18px;
@@ -21,10 +22,12 @@
       margin: 10px;
       cursor: pointer;
     }
+
     #mintBtn {
       background-color: orange;
       color: white;
     }
+
     #connectWalletBtn {
       background-color: black;
       color: white;
@@ -65,13 +68,13 @@
     ];
 
     async function connectWallet() {
-      if (!window.ethereum) {
-        alert("MetaMask not detected!");
-        return;
-      }
-
       try {
-        provider = new ethers.providers.Web3Provider(window.ethereum);
+        if (typeof window.ethereum === "undefined") {
+          alert("MetaMask not detected! Open this in MetaMask browser or Chrome with MetaMask.");
+          return;
+        }
+
+        provider = new ethers.providers.Web3Provider(window.ethereum, "any");
         await provider.send("eth_requestAccounts", []);
         signer = provider.getSigner();
         userAddress = await signer.getAddress();
@@ -81,9 +84,10 @@
         document.getElementById("mintBtn").disabled = false;
 
         alert("Wallet Connected Successfully!");
-      } catch (err) {
-        console.error(err);
-        alert("Connection failed!");
+        console.log("Connected:", userAddress);
+      } catch (error) {
+        console.error("Wallet connection error:", error);
+        alert("Connection failed: " + (error.message || "Unknown error"));
       }
     }
 
@@ -101,8 +105,8 @@
         alert("Transaction sent!\nTX Hash: " + tx.hash);
         window.open(`https://basescan.org/tx/${tx.hash}`, "_blank");
       } catch (error) {
-        console.error(error);
-        alert("Mint failed!");
+        console.error("Mint error:", error);
+        alert("Mint failed: " + (error.message || "Unknown error"));
       }
     }
 
