@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <title>Burn Build Burn</title>
 
-  <!-- Load ethers.js v5 -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <!-- Load ethers.js v5 from unpkg CDN (reliable) -->
+  <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
   <style>
     body {
@@ -76,7 +76,7 @@
       async function connectWallet() {
         try {
           if (typeof window.ethereum === "undefined") {
-            alert("MetaMask not detected! Open this in MetaMask browser or a browser with MetaMask extension.");
+            alert("MetaMask not detected! Open this in MetaMask app or a browser with MetaMask extension.");
             return;
           }
 
@@ -116,7 +116,7 @@
         }
       }
 
-      // Hook up button events
+      // Hook button clicks after load
       document.getElementById("connectWalletBtn").addEventListener("click", connectWallet);
       document.getElementById("mintBtn").addEventListener("click", mintNFT);
     });
