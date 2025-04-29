@@ -1,6 +1,6 @@
 let signer;
 let userAddress;
-const contractAddress = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285"; // Your FireNFT contract address
+const contractAddress = "0x28305b55E88A1696d02F9d31d0f4b0a6e84A5285"; // Your FireNFT contract
 const contractABI = [
   {
     "inputs": [],
